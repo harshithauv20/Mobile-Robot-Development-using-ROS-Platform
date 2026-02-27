@@ -1,0 +1,19 @@
+<launch>
+
+  <!-- ═══════════════════════════════════════════════════════
+       obstacle_avoidance.launch
+       Runs obstacle avoidance node for the simulation.
+       Run AFTER arjuna_sim.launch.
+
+       Robot behaviour:
+         - Moves forward by default
+         - Detects obstacle in front → turns toward more space
+         - Keeps turning until front is clear → moves forward again
+  ═══════════════════════════════════════════════════════ -->
+
+  <node name="obstacle_avoidance"
+        pkg="arjuna_gazebo"
+        type="obstacle_avoidance.py"
+        output="screen"/>
+
+</launch>

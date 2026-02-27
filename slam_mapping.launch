@@ -1,0 +1,58 @@
+<launch>
+
+  <!-- ════════════════════════════════════════════════════════════
+       slam_mapping.launch
+       SLAM = Simultaneous Localisation and Mapping
+       Uses gmapping to build a 2D map while the robot drives around.
+
+       What it needs running first:
+         roslaunch arjuna_gazebo arjuna_sim.launch
+
+       How to use:
+         1. Run this launch file
+         2. Drive the robot with teleop around the whole room
+         3. When the map looks complete, save it:
+              rosrun map_server map_saver -f ~/ros_sim/src/arjuna_gazebo/maps/my_map
+         4. This creates two files: my_map.pgm and my_map.yaml
+            These are used later for navigation.
+
+       Topics:
+         Input:  /scan  (LIDAR)
+                 /tf    (odom→base_link from drive plugin,
+                         base_link→lidar_link from robot_state_publisher)
+         Output: /map   (occupancy grid — the map being built)
+  ════════════════════════════════════════════════════════════ -->
+
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+
+    <!-- ── Input topics ─────────────────────────────────────── -->
+    <param name="base_frame"   value="base_link"/>   <!-- robot centre frame -->
+    <param name="odom_frame"   value="odom"/>         <!-- odometry frame -->
+    <param name="map_frame"    value="map"/>           <!-- output map frame -->
+
+    <!-- ── LIDAR settings ──────────────────────────────────── -->
+    <param name="scan_topic"       value="/scan"/>
+    <param name="maxUrange"        value="10.0"/>   <!-- max usable LIDAR range -->
+    <param name="maxRange"         value="12.0"/>   <!-- max LIDAR range from sensor -->
+    <param name="minimumScore"     value="50"/>     <!-- quality threshold for scan match -->
+
+    <!-- ── Map update settings ─────────────────────────────── -->
+    <param name="map_update_interval"  value="1.0"/>  <!-- seconds between map updates -->
+    <param name="linearUpdate"         value="0.2"/>  <!-- update map after moving 20 cm -->
+    <param name="angularUpdate"        value="0.3"/>  <!-- update after rotating ~17° -->
+    <param name="temporalUpdate"       value="1.0"/>  <!-- update every 1 second minimum -->
+
+    <!-- ── Map resolution and size ─────────────────────────── -->
+    <param name="delta"         value="0.05"/>    <!-- 5 cm map resolution -->
+    <param name="xmin"          value="-10.0"/>   <!-- map boundary (match world size) -->
+    <param name="ymin"          value="-10.0"/>
+    <param name="xmax"          value=" 10.0"/>
+    <param name="ymax"          value=" 10.0"/>
+
+    <!-- ── Particle filter settings ────────────────────────── -->
+    <param name="particles"     value="50"/>      <!-- number of particles (lower = faster) -->
+    <param name="iterations"    value="5"/>       <!-- scan matcher iterations -->
+
+  </node>
+
+</launch>
